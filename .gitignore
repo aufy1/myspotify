@@ -1,0 +1,32 @@
+#System
+.DS_Store
+Thumbs.db
+
+#env
+.env
+.env.*.local
+config.php
+
+#npm, composer
+/vendor/
+node_modules/
+
+#VSCode
+.vscode/
+*.code-workspace
+
+#temp, sql, cache, log
+*.temp
+*.tmp
+.phpunit.result.cache
+*.sql
+*.sqlite
+*.sqlite3
+*.log
+
+#media, uploads
+uploads/cloud
+media/chat_images
+
+#rendered
+output.css

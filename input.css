@@ -1,0 +1,21 @@
+/* input.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "dmsans";
+  src: url("/assets/fonts/DMSans-VariableFont.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+/* datatables */
+table.dataTable thead th,
+table.dataTable thead td,
+table.dataTable tfoot th,
+table.dataTable tfoot td table.dataTable th.dt-type-numeric,
+table.dataTable th.dt-type-date,
+table.dataTable td.dt-type-numeric,
+table.dataTable td.dt-type-date {
+  text-align: center !important;
+}
