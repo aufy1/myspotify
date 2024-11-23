@@ -6,13 +6,13 @@ require_once 'functions.php';
 ?>
 
 <?php if(isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true): ?>
-<body class="bg-gray-100">
+<body class="bg-gray-800">
 
 <?php require_once 'header.php'; ?>
 
 <main class="py-10">
     <section class="sekcja1">    
-        <div class="container mx-auto p-4 bg-white rounded-lg shadow-md">
+        <div class="container mx-auto p-4 bg-gray-900 text-white rounded-lg shadow-md">
             Strona powitalna. Zanim może się ona pojawić, powinno się zrealizować proces logowania, a na każdej stronie aplikacji powinno się sprawdzać sesję.
         </div>    
     </section>

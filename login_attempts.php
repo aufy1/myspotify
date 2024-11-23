@@ -23,15 +23,15 @@ mysqli_close($database);
 ?>
 
 <?php require_once 'head.php'; ?>
-<body class="bg-gray-100">
+<body class="bg-gray-800">
 <?php require_once 'header.php'; ?>
 <main>
     <section class="sekcja1 py-10">
         <div class="container mx-auto">
-            <div class="px-5 overflow-x-auto bg-white shadow-md rounded-lg">
+            <div class="px-5 overflow-x-auto bg-gray-900 shadow-md rounded-lg">
                 <table id="loginsTable" class="min-w-full text-center table-auto">
                     <thead>
-                        <tr class="bg-gray-100 text-gray-600">
+                        <tr class="bg-gray-800 text-gray-300">
                             <th class="px-4 py-2 text-sm font-semibold">Date & Time</th>
                             <th class="px-4 py-2 text-sm font-semibold">Location</th>
                             <th class="px-4 py-2 text-sm font-semibold">IP Address</th>
@@ -47,18 +47,18 @@ mysqli_close($database);
                     </thead>
                     <tbody>
                         <?php foreach ($logins as $login): ?>
-                        <tr class="border-t border-gray-200">
-                            <td class="px-4 py-2 text-sm"><?php echo htmlspecialchars($login['login_datetime']); ?></td>
-                            <td class="px-4 py-2 text-sm"><?php echo htmlspecialchars($login['location']); ?></td>
-                            <td class="px-4 py-2 text-sm"><?php echo htmlspecialchars($login['ip_address']); ?></td>
-                            <td class="px-4 py-2 text-sm"><?php echo htmlspecialchars($login['username']); ?></td>
-                            <td class="px-4 py-2 text-sm"><?php echo htmlspecialchars($login['successful_login']); ?></td>
-                            <td class="px-4 py-2 text-sm"><?php echo htmlspecialchars($login['screen_resolution']); ?></td>
-                            <td class="px-4 py-2 text-sm"><?php echo htmlspecialchars($login['window_resolution']); ?></td>
-                            <td class="px-4 py-2 text-sm"><?php echo htmlspecialchars($login['color_depth']); ?></td>
-                            <td class="px-4 py-2 text-sm"><?php echo htmlspecialchars($login['cookies_enabled']); ?></td>
-                            <td class="px-4 py-2 text-sm"><?php echo htmlspecialchars($login['browser_name']); ?></td>
-                            <td class="px-4 py-2 text-sm"><?php echo htmlspecialchars($login['browser_language']); ?></td>
+                        <tr class="border-t border-gray-700">
+                            <td class="px-4 py-2 text-sm text-gray-300"><?php echo htmlspecialchars($login['login_datetime']); ?></td>
+                            <td class="px-4 py-2 text-sm text-gray-300"><?php echo htmlspecialchars($login['location']); ?></td>
+                            <td class="px-4 py-2 text-sm text-gray-300"><?php echo htmlspecialchars($login['ip_address']); ?></td>
+                            <td class="px-4 py-2 text-sm text-gray-300"><?php echo htmlspecialchars($login['username']); ?></td>
+                            <td class="px-4 py-2 text-sm text-gray-300"><?php echo htmlspecialchars($login['successful_login']); ?></td>
+                            <td class="px-4 py-2 text-sm text-gray-300"><?php echo htmlspecialchars($login['screen_resolution']); ?></td>
+                            <td class="px-4 py-2 text-sm text-gray-300"><?php echo htmlspecialchars($login['window_resolution']); ?></td>
+                            <td class="px-4 py-2 text-sm text-gray-300"><?php echo htmlspecialchars($login['color_depth']); ?></td>
+                            <td class="px-4 py-2 text-sm text-gray-300"><?php echo htmlspecialchars($login['cookies_enabled']); ?></td>
+                            <td class="px-4 py-2 text-sm text-gray-300"><?php echo htmlspecialchars($login['browser_name']); ?></td>
+                            <td class="px-4 py-2 text-sm text-gray-300"><?php echo htmlspecialchars($login['browser_language']); ?></td>
                         </tr>
                         <?php endforeach; ?>
                     </tbody>
@@ -67,6 +67,7 @@ mysqli_close($database);
         </div>
     </section>
 </main>
+
 <?php require_once 'footer.php'; ?>
 <script type="text/javascript">
 $(document).ready(function() {

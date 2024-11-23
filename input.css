@@ -19,3 +19,11 @@ table.dataTable td.dt-type-numeric,
 table.dataTable td.dt-type-date {
   text-align: center !important;
 }
+
+.dt-container,
+.dt-paging-button.disabled,
+.dt-info,
+.dt-paging,
+.dt-paging-button {
+  color: white !important;
+}
