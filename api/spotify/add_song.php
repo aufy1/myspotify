@@ -36,6 +36,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
+    $fileTitle = str_replace(' ', '-', $title);
+
     if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
         // Check file type based on MIME type
         $fileTmpPath = $_FILES['file']['tmp_name'];
@@ -60,9 +62,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit();
         }
 
-        // Generate random string for the filename
-        $randomString = substr(str_shuffle('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 10);
-        $filename = $username . "_" . $title . "_" . $randomString . ".mp3";
+        // Generowanie losowego ciągu znaków dla nazwy pliku
+        $randomString = substr(str_shuffle('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 5);
+        $filename = $userId . "_" . $fileTitle . "_" . $randomString . ".mp3"; // Zmieniona nazwa pliku
 
         // Specify upload directory
         $uploadDir = '../../uploads/songs/';
@@ -83,10 +85,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     try {
-        // Insert data into the database
+        // Insert data into the database (tu wstawiamy oryginalny tytuł z przestrzeniami)
         $stmt = $database->prepare("INSERT INTO song (title, musician, datetime, id_user, filename, lyrics, id_musictype) VALUES (?, ?, NOW(), ?, ?, ?, ?)");
         $stmt->execute([ 
-            $title, 
+            $title, // Oryginalny tytuł z przestrzeniami
             $musician, 
             $userId, 
             $filename, 
