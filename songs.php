@@ -183,7 +183,7 @@ async function loadSongs() {
                 songBox.innerHTML = `
                     <!-- Progress Bar -->
                     <div 
-                        class="progress-bar w-full h-1 bg-gray-600 rounded-t-2xl absolute top-0 left-0 transition-all duration-300 hover:h-2">
+                        class="progress-bar w-full bg-gray-600 rounded-t-2xl absolute top-0 left-0 transition-all duration-300 hover:h-2 z-10">
                         <div 
                             class="progress-fill h-full bg-green-400 rounded-t-2xl transition-all duration-300" 
                             style="width: 0%;">
@@ -224,67 +224,80 @@ async function loadSongs() {
         alert('Wystąpił błąd podczas ładowania piosenek.');
     }
 }
-
 function togglePlayPause(button) {
     const filename = button.getAttribute('data-filename');
     const playIcon = button.querySelector('.playIcon');
     const songBox = button.closest('.w-48');
-    const progressBar = songBox.querySelector('.progress-fill');
+    const progressBar = songBox.querySelector('.progress-bar');
+    const progressFill = progressBar.querySelector('.progress-fill');
 
     if (currentAudio && currentAudio.src.endsWith(filename)) {
-        // If this is the currently playing audio, toggle play/pause
+        // Jeśli obecny utwór gra, wstrzymaj lub kontynuuj
         if (currentAudio.paused) {
             currentAudio.play();
-            playIcon.src = 'media/spotify_icons/pause-solid.svg'; // Change to pause icon
+            playIcon.src = 'media/spotify_icons/pause-solid.svg'; // Zmień ikonę na "pauza"
+            progressBar.classList.add('active'); // Pokaż pasek postępu
         } else {
             currentAudio.pause();
-            playIcon.src = 'media/storage_icons/play-solid.svg'; // Change back to play icon
+            playIcon.src = 'media/storage_icons/play-solid.svg'; // Zmień ikonę na "odtwarzanie"
+            progressBar.classList.remove('active'); // Ukryj pasek postępu
         }
     } else {
-        // If a different song is clicked, stop the current audio
+        // Jeśli wybrano inny utwór
         if (currentAudio) {
             currentAudio.pause();
             currentAudio = null;
 
             if (currentPlayButton) {
                 const prevPlayIcon = currentPlayButton.querySelector('.playIcon');
-                prevPlayIcon.src = 'media/storage_icons/play-solid.svg'; // Reset the previous button
+                prevPlayIcon.src = 'media/storage_icons/play-solid.svg'; // Resetuj poprzedni przycisk
 
                 if (currentProgressBar) {
-                    currentProgressBar.style.width = '0%'; // Reset progress bar
+                    currentProgressBar.classList.remove('active'); // Ukryj poprzedni pasek postępu
+                    currentProgressBar.querySelector('.progress-fill').style.width = '0%'; // Resetuj pasek
                 }
             }
         }
 
-        // Play the new audio
+        // Odtwórz nowy utwór
         currentAudio = new Audio(`uploads/songs/${filename}`);
         currentAudio.play();
-        playIcon.src = 'media/spotify_icons/pause-solid.svg'; // Change to pause icon
+        playIcon.src = 'media/spotify_icons/pause-solid.svg'; // Zmień ikonę na "pauza"
         currentPlayButton = button;
         currentProgressBar = progressBar;
+        progressBar.classList.add('active'); // Pokaż pasek postępu
 
-        // Update progress bar
+        // Aktualizuj pasek postępu
         currentAudio.addEventListener('timeupdate', () => {
             if (currentAudio && currentProgressBar) {
                 const progress = (currentAudio.currentTime / currentAudio.duration) * 100;
-                currentProgressBar.style.width = `${progress}%`;
+                currentProgressBar.querySelector('.progress-fill').style.width = `${progress}%`;
             }
         });
 
-        // Reset button and progress bar when audio ends
+        // Resetuj przycisk i pasek po zakończeniu utworu
         currentAudio.addEventListener('ended', () => {
-            playIcon.src = 'media/storage_icons/play-solid.svg'; // Reset to play icon
+            playIcon.src = 'media/storage_icons/play-solid.svg'; // Zresetuj do ikony "odtwarzanie"
             currentAudio = null;
             currentPlayButton = null;
 
             if (currentProgressBar) {
-                currentProgressBar.style.width = '0%'; // Reset progress bar
+                currentProgressBar.classList.remove('active'); // Ukryj pasek postępu
+                currentProgressBar.querySelector('.progress-fill').style.width = '0%'; // Resetuj pasek
                 currentProgressBar = null;
             }
         });
     }
-}
 
+    // Dodaj nasłuchiwanie kliknięcia na pasek postępu
+    progressBar.addEventListener('click', (event) => {
+        const progressBarWidth = progressBar.offsetWidth; // Szerokość paska
+        const clickPosition = event.offsetX; // Pozycja kliknięcia względem lewej krawędzi paska
+        const newTime = (clickPosition / progressBarWidth) * currentAudio.duration; // Oblicz nowy czas w sekundach
+
+        currentAudio.currentTime = newTime; // Ustaw czas odtwarzania na kliknięte miejsce
+    });
+}
 
 
 function updateProgressBar(audio, progressFill) {

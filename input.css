@@ -27,3 +27,14 @@ table.dataTable td.dt-type-date {
 .dt-paging-button {
   color: white !important;
 }
+
+.progress-bar {
+  height: 0; /* Domyślnie ukryj pasek */
+  opacity: 0; /* Ustaw niewidoczność */
+  transition: height 0.3s ease, opacity 0.3s ease;
+}
+
+.progress-bar.active {
+  height: 4px; /* Wyświetl pasek postępu */
+  opacity: 1; /* Ustaw widoczność */
+}
