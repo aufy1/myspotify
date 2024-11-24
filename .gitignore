@@ -2,10 +2,11 @@
 .DS_Store
 Thumbs.db
 
-#env
+#env, config
 .env
 .env.*.local
 config.php
+.htaccess
 
 #npm, composer
 /vendor/
