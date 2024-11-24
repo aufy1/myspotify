@@ -10,11 +10,10 @@ require_once 'config.php';
 ?>
 
 <?php require_once 'head.php'; ?>	
-<body class="bg-gray-100">
+<body class="bg-gray-800">
 <?php require_once 'header.php'; ?>	
 
-<main class="py-10">
-<section class="sekcja1">	
+<main class="py-10 text-white">	
     <div class="container mx-auto">
             <h2 class="text-center text-2xl mb-5">Edytuj profil</h2>
             
@@ -42,7 +41,7 @@ require_once 'config.php';
                         </button>
                         <div id="changePhotoForm" class="hidden mt-4">
                             <div class="mb-4">
-                                <label for="profilePhoto" class="block text-gray-700 font-medium">Wprowadź zdjęcie</label>
+                                <label for="profilePhoto" class="block text-white font-medium">Wprowadź zdjęcie</label>
                                 <input type="file" class="mt-2 p-2 border border-gray-300 rounded-md w-full" id="profilePhoto" name="profilePhoto">
                             </div>
                         </div>
@@ -55,15 +54,15 @@ require_once 'config.php';
                         </button>
                         <div id="changePasswordForm" class="hidden mt-4 space-y-4">
                             <div class="mb-4">
-                                <label for="currentPassword" class="block text-gray-700 font-medium">Aktualne hasło</label>
+                                <label for="currentPassword" class="block text-white font-medium">Aktualne hasło</label>
                                 <input type="password" class="mt-2 p-2 border border-gray-300 rounded-md w-full" id="currentPassword" name="currentPassword">
                             </div>
                             <div class="mb-4">
-                                <label for="newPassword" class="block text-gray-700 font-medium">Nowe hasło</label>
+                                <label for="newPassword" class="block text-white font-medium">Nowe hasło</label>
                                 <input type="password" class="mt-2 p-2 border border-gray-300 rounded-md w-full" id="newPassword" name="newPassword">
                             </div>
                             <div class="mb-4">
-                                <label for="confirmPassword" class="block text-gray-700 font-medium">Powtórz hasło</label>
+                                <label for="confirmPassword" class="block text-white font-medium">Powtórz hasło</label>
                                 <input type="password" class="mt-2 p-2 border border-gray-300 rounded-md w-full" id="confirmPassword" name="confirmPassword">
                             </div>
                         </div>
@@ -74,7 +73,6 @@ require_once 'config.php';
                 </div>
             </form>
     </div>
-</section>	
 </main>
 
 <?php require_once 'footer.php'; ?>			  	

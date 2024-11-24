@@ -84,48 +84,53 @@ function hasAccessToDisk($database, $username, $disk) {
                 rmdir($folder_path);
             }
         }
-
-
-/*
-        function checkFileExists($database, $disk, $fileName, $path) {
-            // Przygotowanie zapytania SQL, które sprawdza, czy folder istnieje w danym path
-            $query = "SELECT COUNT(*) FROM files WHERE file_name = ? AND disk = ? AND file_type = 'folder' AND path = ?";
+        function getMusicTypeNameById($id_musictype) {
+            global $database; // Use the global database connection
+        
+            // Prepare SQL query to fetch the music type name
+            $query = "SELECT name FROM musictype WHERE id = ?";
+            
+            // Prepare the statement
             $stmt = $database->prepare($query);
-            $count=0;
-
-            if (!$stmt) {
-                echo "Błąd zapytania: " . mysqli_error($database);
-                exit();
+            
+            // Check if the prepare statement was successful
+            if ($stmt === false) {
+                die('MySQL prepare error: ' . $database->error);
             }
         
-            if($path)
-            {
-                $dbPath = $disk . '/' . $path;  
-            }
-            else
-            {
-                $dbPath = $disk . '/';
-            }
-
-        //    if (substr_count($path, '/') > 1) 
-        //    {
-        //        $dbPath = $disk . '/' . $path . '/' . $fileName;
-        //   }
-
-            echo $dbPath;
-
-            $stmt->bind_param('sss', $fileName, $disk, $dbPath);
+            // Bind the ID parameter to the query
+            $stmt->bind_param('i', $id_musictype); // 'i' is for integer
+        
+            // Execute the query
             $stmt->execute();
-            $stmt->bind_result($count);
-            $stmt->fetch();
-            $stmt->close();
         
-            // Jeśli wynik jest większy niż 0, to folder istnieje
-            return $count > 0;
+            // Get the result
+            $result = $stmt->get_result();
+        
+            // Fetch the music type name
+            if ($row = $result->fetch_assoc()) {
+                return $row['name'];
+            } else {
+                return null; // Return null if no music type found
+            }
         }
-*/
 
 
+function getUserIdByUsername($username) {
+    global $database;  // Używamy globalnego obiektu mysqli do połączenia z bazą danych
+
+    $stmt = $database->prepare("SELECT id FROM users WHERE username = ?");
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        return $row['id'];  // Upewnij się, że 'id' to nazwa kolumny w tabeli users
+    } else {
+        return null;
+    }
+}
 
         // Funkcja do tworzenia tokenu
 function generateToken($fileName, $disk, $path, $expiryTime, $username, $secretKey) {
