@@ -29,12 +29,14 @@ table.dataTable td.dt-type-date {
 }
 
 .progress-bar {
-  height: 0; /* Domyślnie ukryj pasek */
-  opacity: 0; /* Ustaw niewidoczność */
+  height: 0;
+  opacity: 0;
   transition: height 0.3s ease, opacity 0.3s ease;
 }
 
+
 .progress-bar.active {
-  height: 4px; /* Wyświetl pasek postępu */
-  opacity: 1; /* Ustaw widoczność */
+  height: 4px;
+  opacity: 1;
+
 }

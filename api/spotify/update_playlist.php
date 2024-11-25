@@ -11,10 +11,15 @@ if (!isset($_SESSION['username'])) {
 require_once('../../config.php');
 require_once('../../functions.php');
 
-// Pobierz dane z żądania POST
+
+
+//dodac weryfikacje id uzytkownika czy tej ta sama co w tabeli przed wykonaniem zapytania
+//dodać w js również weryfikacje przed wyswietleniem przycisku
+
+
 $playlistId = $_POST['playlistId'] ?? null;
 $playlistPublic = $_POST['playlistPublic'] ?? null;
-$songs = $_POST['songs'] ?? []; // Tablica z ID piosenek
+$songs = $_POST['songs'] ?? [];
 
 if (!$playlistId || !isset($playlistPublic)) {
     http_response_code(400);
@@ -22,7 +27,6 @@ if (!$playlistId || !isset($playlistPublic)) {
     exit();
 }
 
-// Weryfikacja poprawności playlistId
 $sql = "SELECT id FROM playlistname WHERE id = ?";
 $stmt = $database->prepare($sql);
 $stmt->bind_param('i', $playlistId);
@@ -35,25 +39,21 @@ if ($result->num_rows === 0) {
     exit();
 }
 
-// Aktualizacja ustawienia prywatności
 $sql = "UPDATE playlistname SET public = ? WHERE id = ?";
 $stmt = $database->prepare($sql);
 $stmt->bind_param('ii', $playlistPublic, $playlistId);
 $stmt->execute();
 
-// Usuń wszystkie piosenki przypisane do tej playlisty
 $sql = "DELETE FROM playlistdatabase WHERE id_playlist = ?";
 $stmt = $database->prepare($sql);
 $stmt->bind_param('i', $playlistId);
 $stmt->execute();
 
-// Dodaj wybrane piosenki do playlisty
 if (!empty($songs)) {
     $placeholders = implode(',', array_fill(0, count($songs), '(?, ?)'));
     $sql = "INSERT INTO playlistdatabase (id_playlist, id_song) VALUES $placeholders";
     $stmt = $database->prepare($sql);
 
-    // Przygotuj dynamiczne parametry
     $params = [];
     foreach ($songs as $songId) {
         if (!is_numeric($songId)) {
@@ -72,7 +72,5 @@ if (!empty($songs)) {
     }
 }
 
-error_log("Updating playlist ID: " . $playlistId);
-// Wyślij odpowiedź JSON
 echo json_encode(["success" => true]);
 ?>

@@ -2,6 +2,8 @@
 session_start();
 header('Content-Type: application/json');
 
+require_once('../../config.php');
+require_once('../../functions.php');
 
 if (!isset($_SESSION['username'])) {
     http_response_code(403);
@@ -9,13 +11,8 @@ if (!isset($_SESSION['username'])) {
     exit();
 }
 
-require_once('../../config.php');
-require_once('../../functions.php');
-
 $username = $_SESSION['username'] ?? '';
 $userId = getUserIdByUsername($username);
-
-header('Content-Type: application/json');
 
 // Check database connection
 if ($database->connect_error) {
@@ -24,15 +21,27 @@ if ($database->connect_error) {
     exit();
 }
 
-// Query to fetch playlists for the logged-in user
-$sql = "
-    SELECT id, name, public, datetime
-    FROM playlistname
-    WHERE id_user = ?
-";
+// Check if the request is for public playlists
+$allPublic = isset($_GET['all_public']) && $_GET['all_public'] === 'true';
 
-$stmt = $database->prepare($sql);
-$stmt->bind_param('i', $userId);  // Bind the user ID to the query
+if ($allPublic) {
+    // Query to fetch all public playlists
+    $sql = "
+        SELECT id, name, public, datetime, id_user
+        FROM playlistname
+        WHERE public = 1
+    ";
+    $stmt = $database->prepare($sql);
+} else {
+    // Query to fetch playlists for the logged-in user
+    $sql = "
+        SELECT id, name, public, datetime, id_user
+        FROM playlistname
+        WHERE id_user = ?
+    ";
+    $stmt = $database->prepare($sql);
+    $stmt->bind_param('i', $userId);  // Bind the user ID to the query
+}
 
 $stmt->execute();
 $result = $stmt->get_result();  // Get the result of the query
@@ -44,10 +53,14 @@ while ($row = $result->fetch_assoc()) {
     $playlists[] = $row;
 }
 
+// Log the query (for debugging purposes)
 file_put_contents('../../php_error.log', "get playlists: " . $sql . "\n", FILE_APPEND);
 
 if ($playlists) {
-    echo json_encode(["playlists" => $playlists]);
+    echo json_encode([
+        "playlists" => $playlists,
+        "loggedInUserId" => $userId
+    ]);
 } else {
     echo json_encode(["playlists" => []]);  // No playlists found
 }

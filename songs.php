@@ -14,18 +14,13 @@ require_once 'config.php';
 <?php require_once 'header.php'; ?>	
 <main class="py-10">
     <div class="container mx-auto">
-        <!-- Button to Add Song -->
-        <!-- Section for My Songs and Add Song Button -->
         <div class="flex justify-between items-center mb-4">
             <h2 class="text-2xl font-bold">Moje Piosenki</h2>
-
-            <!-- Button to Add Song -->
             <button id="addSongButton" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
                 Dodaj Piosenkę
             </button>
         </div>
 
-        <!-- Form to Add Song (Initially Hidden) -->
         <div id="addSongForm" class="hidden fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-75 z-50">
             <div class="bg-gray-800 p-6 rounded-lg shadow-lg w-11/12 md:w-1/2 lg:w-1/3">
                 <h2 class="text-xl font-bold mb-4">Dodaj nową piosenkę</h2>
@@ -90,14 +85,11 @@ require_once 'config.php';
         <!-- Section for My Playlists -->
         <div class="flex justify-between items-center mt-10 mb-4">
             <h2 class="text-2xl font-bold">Moje Playlisty</h2>
-
-            <!-- Button to Add Playlist -->
             <button id="addPlaylistButton" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                 Dodaj Playlistę
             </button>
         </div>
 
-        <!-- Form to Add Playlist (Initially Hidden) -->
         <div id="addPlaylistForm" class="hidden fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-75 z-50">
             <div class="bg-gray-800 p-6 rounded-lg shadow-lg w-11/12 md:w-1/2 lg:w-1/3">
                 <h2 class="text-xl font-bold mb-4">Dodaj nową playlistę</h2>
@@ -127,48 +119,61 @@ require_once 'config.php';
             </div>
         </div>
 
-        <!-- Playlists Container -->
         <div id="playlistsContainer" class="flex flex-wrap gap-4">
             <!-- Playlists -->
         </div>
 
 
         <div id="editPlaylistForm" class="hidden fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-75 z-50">
-    <div class="bg-gray-800 p-6 rounded-lg shadow-lg w-11/12 md:w-1/2 lg:w-1/3">
-        <h2 class="text-xl font-bold mb-4">Edytuj playlistę</h2>
-        <form id="editPlaylistFormElement">
-        <input type="hidden" id="playlistIdInput" name="playlistId" value="">
+            <div class="bg-gray-800 p-6 rounded-lg shadow-lg w-11/12 md:w-1/2 lg:w-1/3">
+                <h2 class="text-xl font-bold mb-4">Edytuj playlistę</h2>
+                <form id="editPlaylistFormElement">
+                <input type="hidden" id="playlistIdInput" name="playlistId" value="">
 
+                    <div class="mb-4">
+                        <label for="playlistPublic" class="block text-sm font-medium mb-2">Ustawienia prywatności:</label>
+                        <select id="playlistPublic" name="playlistPublic" class="w-full p-2 border border-gray-700 rounded bg-gray-700 text-white focus:ring focus:ring-green-500">
+                            <option value="1">Publiczna</option>
+                            <option value="0">Prywatna</option>
+                        </select>
+                    </div>
 
-            <!-- Public/Private Setting -->
-            <div class="mb-4">
-                <label for="playlistPublic" class="block text-sm font-medium mb-2">Ustawienia prywatności:</label>
-                <select id="playlistPublic" name="playlistPublic" class="w-full p-2 border border-gray-700 rounded bg-gray-700 text-white focus:ring focus:ring-green-500">
-                    <option value="1">Publiczna</option>
-                    <option value="0">Prywatna</option>
-                </select>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-2">Dodaj Piosenki:</label>
+                        <div id="songsCheckboxList" class="space-y-2">
+                            <!-- Song checkboxes will be populated dynamically -->
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end space-x-4">
+                        <button type="button" id="cancelEditPlaylistButton" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                            Anuluj
+                        </button>
+                        <button id="submitEditPlaylistButton"  type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                            Zapisz
+                        </button>
+                    </div>
+                </form>
             </div>
+        </div>
 
-            <!-- Add Songs -->
-            <div class="mb-4">
-                <label class="block text-sm font-medium mb-2">Dodaj Piosenki:</label>
-                <div id="songsCheckboxList" class="space-y-2">
-                    <!-- Song checkboxes will be populated dynamically -->
+        <div id="playlistModal" class="hidden fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-75 z-50">
+            <div class="bg-gray-800 p-6 rounded-lg shadow-lg w-11/12 md:w-1/2 lg:w-1/3">
+                <h2 id="modalPlaylistTitle" class="text-xl font-bold mb-4 text-white"></h2>
+                <p id="modalPlaylistDetails" class="text-white mb-4"></p>
+                
+                <!-- Songs Container -->
+                <div id="modalSongsContainer" class="flex flex-wrap justify-center gap-4"></div>
+
+                <div class="flex justify-end mt-4">
+                    <button id="closeModalButton" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                        Zamknij
+                    </button>
                 </div>
             </div>
+        </div>
 
-            <!-- Buttons -->
-            <div class="flex justify-end space-x-4">
-                <button type="button" id="cancelEditPlaylistButton" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                    Anuluj
-                </button>
-                <button id="submitEditPlaylistButton"  type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                    Zapisz
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
+
 
 
 
@@ -178,45 +183,160 @@ require_once 'config.php';
 <?php require_once 'footer.php'; ?>            
 
 <script>
-// Show the form when the "Add Song" button is clicked
 const addSongButton = document.getElementById('addSongButton');
 const addSongForm = document.getElementById('addSongForm');
 const cancelSongButton = document.getElementById('cancelButton');
+const cancelPlaylistButton = document.getElementById('cancelPlaylistButton');
+// Pobierz elementy modala
+const playlistModal = document.getElementById('playlistModal');
+const closeModalButton = document.getElementById('closeModalButton');
+
+// Funkcja do otwierania modala
+function openModal() {
+    playlistModal.classList.remove('hidden');
+}
+
+// Funkcja do zamykania modala
+function closeModal() {
+    playlistModal.classList.add('hidden');
+}
+
+// Dodaj obsługę zamknięcia modala
+closeModalButton.addEventListener('click', closeModal);
+
+// Dodaj event listener do boxów playlisty
+document.getElementById('playlistsContainer').addEventListener('click', (e) => {
+    const target = e.target;
+    // Upewnij się, że kliknięcie nie dotyczy przycisku "gear"
+    if (!target.closest('.viewPlaylistButton')) {
+        const playlistBox = target.closest('div[class*="playlistBox"]');
+        if (playlistBox) {
+            openModal();
+        }
+    }
+});
+
+
+function createSongPlayer(song, playerType = 'square') {
+    const songBox = document.createElement('div');
+
+    if (playerType === 'square') {
+        songBox.classList.add(
+            'w-60',
+            'h-60',
+            'bg-gray-700',
+            'rounded-3xl',
+            'flex',
+            'flex-col',
+            'items-center',
+            'justify-center',
+            'shadow-lg',
+            'relative',
+            'overflow-hidden',
+            'transition-transform',
+            'duration-300',
+            'hover:scale-105'
+        );
+
+        songBox.innerHTML = `
+            <div 
+                class="progress-bar w-full bg-gray-600 rounded-t-2xl absolute top-0 left-0 transition-all duration-300 hover:h-2 z-10">
+                <div 
+                    class="progress-fill h-full bg-green-400 rounded-t-2xl transition-all duration-300" 
+                    style="width: 0%;">
+                </div>
+            </div>
+
+            <div class="absolute inset-0 -mt-12 flex items-center justify-center">
+                <div class="bg-gray-500 opacity-50 p-6 rounded-full">
+                    <img src="media/spotify_icons/music-solid.svg" alt="Music Icon" class="w-12 h-12 text-gray-200" />
+                </div>
+            </div>
+
+            <div class="absolute bottom-2 left-2 right-2 text-center">
+                <h3 class="text-xl font-semibold text-white">${song.title}</h3>
+                <p class="text-sm text-gray-400">${song.musician}</p>
+            </div>
+
+            <button 
+                class="playButton absolute bottom-2 right-2 bg-green-600 hover:bg-green-700 text-white rounded-full p-3 flex items-center justify-center" 
+                data-filename="${song.filename}">
+                <img src="media/storage_icons/play-solid.svg" alt="Play Icon" class="playIcon w-6 h-6" />
+            </button>
+        `;
+    } else if (playerType === 'wide') {
+        songBox.classList.add(
+            'w-full',
+            'h-24',
+            'bg-gray-700',
+            'rounded-xl',
+            'flex',
+            'items-center',
+            'justify-between',
+            'shadow-md',
+            'relative',
+            'overflow-hidden',
+            'transition-transform',
+            'duration-300',
+            'hover:scale-105'
+        );
+
+        songBox.innerHTML = `
+            <div class="flex items-center h-full px-4">
+                <div class="bg-gray-600 p-4 rounded-full">
+                    <img src="media/spotify_icons/music-solid.svg" alt="Music Icon" class="w-8 h-8 text-gray-200" />
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-lg font-semibold text-white">${song.title}</h3>
+                    <p class="text-sm text-gray-400">${song.musician}</p>
+                </div>
+            </div>
+
+            <div class="flex items-center h-full px-4">
+                <button 
+                    class="playButton bg-green-600 hover:bg-green-700 text-white rounded-full p-3 flex items-center justify-center" 
+                    data-filename="${song.filename}">
+                    <img src="media/storage_icons/play-solid.svg" alt="Play Icon" class="playIcon w-6 h-6" />
+                </button>
+            </div>
+        `;
+    }
+
+    // Add play button functionality
+    const playButton = songBox.querySelector('.playButton');
+    playButton.addEventListener('click', () => togglePlayPause(playButton));
+
+    return songBox;
+}
+
+
+
 
 addSongButton.addEventListener('click', () => {
     addSongForm.classList.remove('hidden');
 });
 
-// Hide the form when the "Cancel" button in Add Song form is clicked
 cancelSongButton.addEventListener('click', () => {
     addSongForm.classList.add('hidden');
 });
-
-// Show the form when the "Add Playlist" button is clicked
-const addPlaylistButton = document.getElementById('addPlaylistButton');
-const addPlaylistForm = document.getElementById('addPlaylistForm');
-const cancelPlaylistButton = document.getElementById('cancelPlaylistButton');
 
 addPlaylistButton.addEventListener('click', () => {
     addPlaylistForm.classList.remove('hidden');
 });
 
-// Hide the form when the "Cancel" button in Add Playlist form is clicked
 cancelPlaylistButton.addEventListener('click', () => {
     addPlaylistForm.classList.add('hidden');
 });
 
-// Handle the form submission for adding a new playlist
-const addPlaylistFormElement = document.getElementById('addPlaylistFormElement');
-
 addPlaylistFormElement.addEventListener('submit', function(event) {
     event.preventDefault();  // Prevent the default form submission
-    
-    // Prepare the form data to be sent
-    const formData = new FormData(this);
 
-    // Send the form data to the server (use your actual server URL)
-    fetch('api/spotify/add_playlist.php', {
+    const formData = new FormData(this); // Prepare the form data to be sent
+    const addPlaylistFormElement = document.getElementById('addPlaylistFormElement');
+    const addPlaylistButton = document.getElementById('addPlaylistButton');
+    const addPlaylistForm = document.getElementById('addPlaylistForm');
+
+    fetch('api/spotify/add_playlist.php', {    // Send the form data to the server (use your actual server URL)
         method: 'POST',
         body: formData,
     })
@@ -225,12 +345,6 @@ addPlaylistFormElement.addEventListener('submit', function(event) {
         if (data.success) {
             // Handle successful playlist addition
             alert('Playlist added successfully!');
-            
-            // Optionally, update the playlist list (e.g., append the new playlist)
-            // Here you would typically call a function to refresh the playlist display
-            // Example: updatePlaylistList();
-
-            // Optionally, hide the form after successful submission
             addPlaylistForm.classList.add('hidden');
         } else {
             // Handle error response from server
@@ -243,9 +357,7 @@ addPlaylistFormElement.addEventListener('submit', function(event) {
     });
 });
 
-
-    // Handle the form submission
-    document.getElementById('addSongFormElement').addEventListener('submit', async (e) => {
+document.getElementById('addSongFormElement').addEventListener('submit', async (e) => {
         e.preventDefault();
 
         const formData = new FormData(e.target);
@@ -279,23 +391,13 @@ addPlaylistFormElement.addEventListener('submit', function(event) {
         }
     });
 
-    // Fetch and display the songs for the logged-in user
-    document.addEventListener('DOMContentLoaded', async () => {
-        loadSongs();
-        loadPlaylists();
-    });
-
-
-
-let currentAudio = null; // Reference to the currently playing audio
-let currentPlayButton = null; // Reference to the current play button
-let currentProgressBar = null; // Reference to the current progress bar
+let currentAudio = null;
+let currentPlayButton = null;
+let currentProgressBar = null;
 
 async function loadSongs() {
     try {
-        const response = await fetch('api/spotify/get_songs.php', {
-            method: 'GET',
-        });
+        const response = await fetch('api/spotify/get_songs.php', { method: 'GET' });
         const result = await response.json();
 
         if (response.ok) {
@@ -303,57 +405,8 @@ async function loadSongs() {
             songsContainer.innerHTML = ''; // Clear existing songs
 
             result.songs.forEach(song => {
-                const songBox = document.createElement('div');
-                songBox.classList.add(
-                    'w-60', 
-                    'h-60', 
-                    'bg-gray-700', 
-                    'rounded-3xl', 
-                    'flex', 
-                    'flex-col', 
-                    'items-center', 
-                    'justify-center', 
-                    'shadow-lg', 
-                    'relative', 
-                    'overflow-hidden', // Ensure content stays within the box
-                    'transition-transform', // Enable smooth scaling effect
-                    'duration-300', // Duration of the scaling effect
-                    'hover:scale-105' // Scale slightly on hover
-                );
-
-                songBox.innerHTML = `
-                    <div 
-                        class="progress-bar w-full bg-gray-600 rounded-t-2xl absolute top-0 left-0 transition-all duration-300 hover:h-2 z-10">
-                        <div 
-                            class="progress-fill h-full bg-green-400 rounded-t-2xl transition-all duration-300" 
-                            style="width: 0%;">
-                        </div>
-                    </div>
-
-                    <div class="absolute inset-0 -mt-12 flex items-center justify-center">
-                        <div class="bg-gray-500 opacity-50 p-6 rounded-full">
-                            <img src="media/spotify_icons/music-solid.svg" alt="Music Icon" class="w-12 h-12 text-gray-200" />
-                        </div>
-                    </div>
-
-                    <div class="absolute bottom-2 left-2 right-2 text-center">
-                        <h3 class="text-xl font-semibold text-white">${song.title}</h3>
-                        <p class="text-sm text-gray-400">${song.musician}</p>
-                    </div>
-
-                    <button 
-                        class="playButton absolute bottom-2 right-2 bg-green-600 hover:bg-green-700 text-white rounded-full p-3 flex items-center justify-center" 
-                        data-filename="${song.filename}">
-                        <img src="media/storage_icons/play-solid.svg" alt="Play Icon" class="playIcon w-6 h-6" />
-                    </button>
-                `;
-
-                songsContainer.appendChild(songBox);
-            });
-
-            // Add event listeners to all play buttons
-            document.querySelectorAll('.playButton').forEach(button => {
-                button.addEventListener('click', () => togglePlayPause(button));
+                const songPlayer = createSongPlayer(song); // Use the universal component
+                songsContainer.appendChild(songPlayer);
             });
         } else {
             alert(result.error || 'Wystąpił błąd');
@@ -363,6 +416,7 @@ async function loadSongs() {
         alert('Wystąpił błąd podczas ładowania piosenek.');
     }
 }
+
 
 async function loadPlaylists() {
     try {
@@ -375,19 +429,20 @@ async function loadPlaylists() {
             const playlistsContainer = document.getElementById('playlistsContainer');
             playlistsContainer.innerHTML = ''; // Clear existing playlists
 
+            // Iterate through playlists and generate boxes
             result.playlists.forEach(playlist => {
-    const playlistBox = document.createElement('div');
+                const playlistBox = document.createElement('div');
                 playlistBox.classList.add(
-                    'w-60', 
-                    'h-60', 
-                    'bg-gray-700', 
-                    'rounded', 
-                    'flex', 
-                    'flex-col', 
-                    'items-center', 
-                    'justify-center', 
-                    'shadow-lg', 
-                    'relative', 
+                    'w-60',
+                    'h-60',
+                    'bg-gray-700',
+                    'rounded',
+                    'flex',
+                    'flex-col',
+                    'items-center',
+                    'justify-center',
+                    'shadow-lg',
+                    'relative',
                     'overflow-hidden', // Ensure content stays within the box
                     'transition-transform', // Enable smooth scaling effect
                     'duration-300', // Duration of the scaling effect
@@ -400,34 +455,34 @@ async function loadPlaylists() {
                             <img src="media/spotify_icons/list-solid.svg" alt="Playlist Icon" class="w-12 h-12 text-gray-200" />
                         </div>
                     </div>
-
                     <div class="absolute bottom-2 left-2 right-2 text-center">
                         <h3 class="text-xl font-semibold text-white">${playlist.name}</h3>
                         <p class="text-sm text-gray-400">${playlist.public == '1' ? 'Publiczna' : 'Prywatna'}</p>
                     </div>
-
                     <!-- Left button (Gear icon) -->
                     <button 
                         class="viewPlaylistButton absolute bottom-2 left-2 opacity-90 bg-blue-600 hover:bg-blue-700 text-white rounded-full p-3 flex items-center justify-center" 
                         data-playlist-id="${playlist.id}">
                         <img src="media/spotify_icons/gear-solid.svg" alt="View Playlist Icon" class="viewPlaylistIcon w-6 h-6" />
                     </button>
-
-                    <!-- Right button (Play icon) -->
-                    <button 
-                        class="playButton absolute bottom-2 right-2 bg-green-600 hover:bg-green-700 text-white rounded-full p-3 flex items-center justify-center" 
-                        data-playlist-id="${playlist.id}">
-                        <img src="media/storage_icons/play-solid.svg" alt="Play Icon" class="playIcon w-6 h-6" />
-                    </button>
                 `;
+
+                // Add event listener for box click (excluding the gear button)
+                playlistBox.addEventListener('click', (e) => {
+                    if (!e.target.closest('.viewPlaylistButton')) {
+                        openPlaylistModal(playlist.name, playlist.public == '1' ? 'Publiczna' : 'Prywatna', playlist.id); 
+                    }
+                });
 
                 playlistsContainer.appendChild(playlistBox);
             });
 
-
-            // Add event listeners to all view buttons
+            // Add event listeners to all gear buttons
             document.querySelectorAll('.viewPlaylistButton').forEach(button => {
-                button.addEventListener('click', () => viewPlaylistDetails(button));
+                button.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Prevent box click event
+                    viewPlaylistDetails(button);
+                });
             });
         } else {
             alert(result.error || 'Wystąpił błąd');
@@ -438,11 +493,59 @@ async function loadPlaylists() {
     }
 }
 
-let isFormSubmitting = false;
+async function openPlaylistModal(title, details, playlistId) {
+    console.log('Opening modal for playlistId:', playlistId);
+
+    const playlistModal = document.getElementById('playlistModal');
+    const modalPlaylistTitle = document.getElementById('modalPlaylistTitle');
+    const modalPlaylistDetails = document.getElementById('modalPlaylistDetails');
+    const modalSongsContainer = document.getElementById('modalSongsContainer');
+
+    modalPlaylistTitle.textContent = title;
+    modalPlaylistDetails.textContent = `Status: ${details}`;
+    modalSongsContainer.innerHTML = '<p class="text-gray-400">Ładowanie piosenek...</p>';
+
+    try {
+        const response = await fetch(`api/spotify/get_playlist_songs.php?playlist_id=${playlistId}`, { method: 'GET' });
+        const result = await response.json();
+
+        console.log('API Response:', result);
+
+        if (response.ok && result.songs && Array.isArray(result.songs) && result.songs.length > 0) {
+            modalSongsContainer.innerHTML = ''; // Wyczyszczenie placeholdera
+
+            result.songs.forEach(song => {
+                console.log('Adding song:', song);
+                const songPlayer = createSongPlayer(song, 'wide'); // Uniwersalny komponent
+                modalSongsContainer.appendChild(songPlayer);
+            });
+        } else {
+            modalSongsContainer.innerHTML = `<p class="text-gray-400">${result.error || 'Brak piosenek w playliście.'}</p>`;
+        }
+    } catch (error) {
+        console.error('Error fetching playlist songs:', error);
+        modalSongsContainer.innerHTML = '<p class="text-gray-400">Wystąpił błąd podczas ładowania piosenek.</p>';
+    }
+
+    playlistModal.classList.remove('hidden');
+}
+
+
+
+
+// Function to close the playlist modal
+function closePlaylistModal() {
+    const playlistModal = document.getElementById('playlistModal');
+    playlistModal.classList.add('hidden');
+}
+
+// Add event listener for closing the modal
+document.getElementById('closeModalButton').addEventListener('click', closePlaylistModal);
+
 
 function viewPlaylistDetails(button) {
+    let isFormSubmitting = false;
     const playlistId = $(button).data('playlist-id');
-
     const $editPlaylistForm = $('#editPlaylistForm');
     const $editPlaylistFormElement = $('#editPlaylistFormElement');
     const $songsCheckboxList = $('#songsCheckboxList');
@@ -526,11 +629,6 @@ function viewPlaylistDetails(button) {
     $editPlaylistFormElement.on('submit', handleSubmit);
 }
 
-
-
-
-
-
 function togglePlayPause(button) {
     const filename = $(button).data('filename');
     const playIcon = $(button).find('.playIcon');
@@ -606,8 +704,6 @@ function togglePlayPause(button) {
     });
 }
 
-
-
 function updateProgressBar(audio, progressFill) {
     audio.addEventListener('timeupdate', () => {
         const progress = (audio.currentTime / audio.duration) * 100;
@@ -615,6 +711,10 @@ function updateProgressBar(audio, progressFill) {
     });
 }
 
+document.addEventListener('DOMContentLoaded', async () => {
+        loadSongs();
+        loadPlaylists();
+});
 
 </script>
 </body>
