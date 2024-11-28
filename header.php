@@ -24,7 +24,7 @@ if (!file_exists($imagePath)) {
         <nav class="hidden md:flex items-center space-x-6">
           <a href="index.php" class="text-base font-medium text-gray-300 hover:text-gray-100">Strona główna</a>
           <a href="songs.php" class="text-base font-medium text-gray-300 hover:text-gray-100">Piosenki</a>
-          <a href="songs.php" class="text-base font-medium text-gray-300 hover:text-gray-100">Playlisty</a>
+          <a href="playlists.php" class="text-base font-medium text-gray-300 hover:text-gray-100">Playlisty</a>
           <a href="login_attempts.php" class="text-base font-medium text-gray-300 hover:text-gray-100">Historia logowań</a>
         </nav>
       </div>
