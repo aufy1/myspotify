@@ -183,6 +183,14 @@ require_once 'config.php';
 <?php require_once 'footer.php'; ?>            
 
 <script>
+document.addEventListener('DOMContentLoaded', async () => {
+        loadSongs();
+        loadPlaylists();
+});
+
+
+
+
 const addSongButton = document.getElementById('addSongButton');
 const addSongForm = document.getElementById('addSongForm');
 const cancelSongButton = document.getElementById('cancelButton');
@@ -191,20 +199,16 @@ const cancelPlaylistButton = document.getElementById('cancelPlaylistButton');
 const playlistModal = document.getElementById('playlistModal');
 const closeModalButton = document.getElementById('closeModalButton');
 
-// Funkcja do otwierania modala
 function openModal() {
     playlistModal.classList.remove('hidden');
 }
 
-// Funkcja do zamykania modala
 function closeModal() {
     playlistModal.classList.add('hidden');
 }
 
-// Dodaj obsługę zamknięcia modala
 closeModalButton.addEventListener('click', closeModal);
 
-// Dodaj event listener do boxów playlisty
 document.getElementById('playlistsContainer').addEventListener('click', (e) => {
     const target = e.target;
     // Upewnij się, że kliknięcie nie dotyczy przycisku "gear"
@@ -287,8 +291,8 @@ function createSongPlayer(song, playerType = 'square') {
                     <img src="media/spotify_icons/music-solid.svg" alt="Music Icon" class="w-8 h-8 text-gray-200" />
                 </div>
                 <div class="ml-4">
-                    <h3 class="text-lg font-semibold text-white">${song.title}</h3>
-                    <p class="text-sm text-gray-400">${song.musician}</p>
+                    <h3 class="text-lg font-semibold text-white inline">${song.title}</h3>
+                    <span class="text-sm text-gray-400 ml-2">by ${song.musician}</span>
                 </div>
             </div>
 
@@ -299,6 +303,15 @@ function createSongPlayer(song, playerType = 'square') {
                     <img src="media/storage_icons/play-solid.svg" alt="Play Icon" class="playIcon w-6 h-6" />
                 </button>
             </div>
+
+            <!-- Progress bar -->
+            <div 
+                class="progress-bar w-full bg-gray-600 absolute bottom-0 left-0 h-1 z-10">
+                <div 
+                    class="progress-fill h-full bg-green-400 transition-all duration-300" 
+                    style="width: 0%;">
+                </div>
+            </div>
         `;
     }
 
@@ -308,7 +321,6 @@ function createSongPlayer(song, playerType = 'square') {
 
     return songBox;
 }
-
 
 
 
@@ -493,7 +505,11 @@ async function loadPlaylists() {
     }
 }
 
+let playlistSongs = []; // Zmienna globalna
+let isInPlaylistModal = false; // Initialize the variable
+
 async function openPlaylistModal(title, details, playlistId) {
+    isInPlaylistModal = true;
     console.log('Opening modal for playlistId:', playlistId);
 
     const playlistModal = document.getElementById('playlistModal');
@@ -512,11 +528,13 @@ async function openPlaylistModal(title, details, playlistId) {
         console.log('API Response:', result);
 
         if (response.ok && result.songs && Array.isArray(result.songs) && result.songs.length > 0) {
+            playlistSongs = result.songs; // Przechowaj piosenki w zmiennej globalnej
             modalSongsContainer.innerHTML = ''; // Wyczyszczenie placeholdera
 
-            result.songs.forEach(song => {
+            result.songs.forEach((song, index) => {
                 console.log('Adding song:', song);
-                const songPlayer = createSongPlayer(song, 'wide'); // Uniwersalny komponent
+                const songPlayer = createSongPlayer(song, 'wide');
+                songPlayer.querySelector('.playButton').dataset.songIndex = index;  // Ustawienie indeksu piosenki
                 modalSongsContainer.appendChild(songPlayer);
             });
         } else {
@@ -530,16 +548,35 @@ async function openPlaylistModal(title, details, playlistId) {
     playlistModal.classList.remove('hidden');
 }
 
-
-
-
-// Function to close the playlist modal
 function closePlaylistModal() {
+    isInPlaylistModal = false;
     const playlistModal = document.getElementById('playlistModal');
+
+    // Sprawdź, czy obecnie odtwarzane audio jest związane z modalem
+    if (currentAudio && currentPlayButton && playlistModal.contains(currentPlayButton)) {
+        // Zatrzymaj odtwarzanie
+        currentAudio.pause();
+        currentAudio.currentTime = 0; // Ustaw czas na początek
+
+        // Resetuj progress bar
+        if (currentProgressBar) {
+            currentProgressBar.find('.progress-fill').css('width', '0%');
+            currentProgressBar.removeClass('active');
+        }
+
+        // Zresetuj zmienne globalne
+        currentAudio = null;  // Resetowanie aktualnego audio
+        currentProgressBar = null;  // Resetowanie referencji do progress bara
+        currentPlayButton = null;  // Resetowanie przycisku play
+    }
+
+    // Ukryj modal
     playlistModal.classList.add('hidden');
 }
 
-// Add event listener for closing the modal
+
+
+
 document.getElementById('closeModalButton').addEventListener('click', closePlaylistModal);
 
 
@@ -558,7 +595,7 @@ function viewPlaylistDetails(button) {
 
     async function loadSongs() {
         try {
-            const response = await fetch('api/spotify/get_songs.php');
+            const response = await fetch(`api/spotify/get_playlist_details_songs.php?playlist_id=${playlistId}`);
             const result = await response.json();
 
             if (response.ok) {
@@ -567,7 +604,7 @@ function viewPlaylistDetails(button) {
                 result.songs.forEach(song => {
                     const songCheckbox = $(`
                         <div class="flex items-center space-x-2">
-                            <input type="checkbox" id="song-${song.id}" name="songs[]" value="${song.id}" class="form-checkbox h-5 w-5 text-green-500">
+                            <input type="checkbox" id="song-${song.id}" name="songs[]" value="${song.id}" class="form-checkbox h-5 w-5 text-green-500" ${song.in_playlist ? 'checked' : ''}>
                             <label for="song-${song.id}" class="text-white">${song.title} - ${song.musician}</label>
                         </div>
                     `);
@@ -629,23 +666,26 @@ function viewPlaylistDetails(button) {
     $editPlaylistFormElement.on('submit', handleSubmit);
 }
 
+
 function togglePlayPause(button) {
     const filename = $(button).data('filename');
+    const songIndex = $(button).data('songIndex'); // Zmieniamy 'index' na 'songIndex'
     const playIcon = $(button).find('.playIcon');
-    const songBox = $(button).closest('.w-60');
+    const songBox = $(button).closest('.w-full, .w-60');
     const progressBar = songBox.find('.progress-bar');
     const progressFill = progressBar.find('.progress-fill');
 
+    // Sprawdzamy, czy już odtwarzamy ten utwór
     if (currentAudio && currentAudio.src.endsWith(filename)) {
-        // Jeśli obecny utwór gra, wstrzymaj lub kontynuuj
+        // Jeśli utwór gra, wstrzymaj lub kontynuuj
         if (currentAudio.paused) {
             currentAudio.play();
-            playIcon.attr('src', 'media/spotify_icons/pause-solid.svg'); // Zmień ikonę na "pauza"
-            progressBar.addClass('active'); // Pokaż pasek postępu
+            playIcon.attr('src', 'media/spotify_icons/pause-solid.svg');
+            progressBar.addClass('active');
         } else {
             currentAudio.pause();
-            playIcon.attr('src', 'media/storage_icons/play-solid.svg'); // Zmień ikonę na "odtwarzanie"
-            progressBar.removeClass('active'); // Ukryj pasek postępu
+            playIcon.attr('src', 'media/storage_icons/play-solid.svg');
+            progressBar.removeClass('active');
         }
     } else {
         // Jeśli wybrano inny utwór
@@ -655,11 +695,11 @@ function togglePlayPause(button) {
 
             if (currentPlayButton) {
                 const prevPlayIcon = $(currentPlayButton).find('.playIcon');
-                prevPlayIcon.attr('src', 'media/storage_icons/play-solid.svg'); // Resetuj poprzedni przycisk
+                prevPlayIcon.attr('src', 'media/storage_icons/play-solid.svg');
 
                 if (currentProgressBar) {
-                    currentProgressBar.removeClass('active'); // Ukryj poprzedni pasek postępu
-                    currentProgressBar.find('.progress-fill').css('width', '0%'); // Resetuj pasek
+                    currentProgressBar.removeClass('active');
+                    currentProgressBar.find('.progress-fill').css('width', '0%');
                 }
             }
         }
@@ -667,12 +707,12 @@ function togglePlayPause(button) {
         // Odtwórz nowy utwór
         currentAudio = new Audio(`uploads/songs/${filename}`);
         currentAudio.play();
-        playIcon.attr('src', 'media/spotify_icons/pause-solid.svg'); // Zmień ikonę na "pauza"
+        playIcon.attr('src', 'media/spotify_icons/pause-solid.svg');
         currentPlayButton = button;
         currentProgressBar = progressBar;
-        progressBar.addClass('active'); // Pokaż pasek postępu
+        progressBar.addClass('active');
+        progressFill.css('width', '0%'); 
 
-        // Aktualizuj pasek postępu
         $(currentAudio).on('timeupdate', function() {
             if (currentAudio && currentProgressBar) {
                 const progress = (currentAudio.currentTime / currentAudio.duration) * 100;
@@ -680,41 +720,43 @@ function togglePlayPause(button) {
             }
         });
 
-        // Resetuj przycisk i pasek po zakończeniu utworu
         $(currentAudio).on('ended', function() {
-            playIcon.attr('src', 'media/storage_icons/play-solid.svg'); // Zresetuj do ikony "odtwarzanie"
+            // Zresetuj poprzedni utwór
+            if (currentPlayButton) {
+                const prevPlayIcon = $(currentPlayButton).find('.playIcon');
+                prevPlayIcon.attr('src', 'media/storage_icons/play-solid.svg');
+                if (currentProgressBar) {
+                    currentProgressBar.removeClass('active');
+                    currentProgressBar.find('.progress-fill').css('width', '0%');
+                }
+            }
+
+            // Zresetuj zmienne
             currentAudio = null;
             currentPlayButton = null;
+            currentProgressBar = null;
 
-            if (currentProgressBar) {
-                currentProgressBar.removeClass('active'); // Ukryj pasek postępu
-                currentProgressBar.find('.progress-fill').css('width', '0%'); // Resetuj pasek
-                currentProgressBar = null;
+            // Jeśli jesteśmy w modal i są kolejne piosenki
+            if (isInPlaylistModal && playlistSongs[songIndex + 1]) {
+                const nextSong = playlistSongs[songIndex + 1];
+                const nextSongButton = document.querySelector(`[data-song-index="${songIndex + 1}"]`); // Używamy 'data-song-index'
+                togglePlayPause(nextSongButton);
             }
         });
     }
 
-    // Dodaj nasłuchiwanie kliknięcia na pasek postępu
+    // Obsługa kliknięcia na pasek postępu
     progressBar.on('click', function(event) {
-        const progressBarWidth = progressBar.width(); // Szerokość paska
-        const clickPosition = event.offsetX; // Pozycja kliknięcia względem lewej krawędzi paska
-        const newTime = (clickPosition / progressBarWidth) * currentAudio.duration; // Oblicz nowy czas w sekundach
-
-        currentAudio.currentTime = newTime; // Ustaw czas odtwarzania na kliknięte miejsce
+        if (currentAudio && currentAudio.duration && currentAudio.duration > 0) {
+            const progressBarWidth = progressBar.width();
+            const clickPosition = event.offsetX;
+            const newTime = (clickPosition / progressBarWidth) * currentAudio.duration;
+            if (!isNaN(newTime) && newTime >= 0 && newTime <= currentAudio.duration) {
+                currentAudio.currentTime = newTime;
+            }
+        }
     });
 }
-
-function updateProgressBar(audio, progressFill) {
-    audio.addEventListener('timeupdate', () => {
-        const progress = (audio.currentTime / audio.duration) * 100;
-        progressFill.style.width = `${progress}%`;
-    });
-}
-
-document.addEventListener('DOMContentLoaded', async () => {
-        loadSongs();
-        loadPlaylists();
-});
 
 </script>
 </body>
