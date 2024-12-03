@@ -34,9 +34,39 @@ table.dataTable td.dt-type-date {
   transition: height 0.3s ease, opacity 0.3s ease;
 }
 
-
 .progress-bar.active {
   height: 4px;
   opacity: 1;
+}
 
+.hide-scrollbar {
+  scrollbar-width: none !important; /* Firefox */
+  -ms-overflow-style: none !important; /* Internet Explorer 10+ */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none !important; /* Chrome, Safari, Edge */
+}
+
+.scroll-container {
+  position: relative;
+  overflow-y: scroll; /* Przewijanie w pionie */
+  padding: 16px; /* Opcjonalne wcięcie */
+}
+
+.scroll-container .song-item {
+  /* Elementy z efektem powiększania */
+  will-change: transform; /* Optymalizacja */
+  transition: transform 0.3s ease; /* Płynne powiększenie */
+}
+
+.scroll-container::before,
+.scroll-container::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 20px; /* Rozmiar maski */
+  z-index: 10;
+  pointer-events: none; /* Przewijanie nadal działa */
 }

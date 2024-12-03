@@ -158,20 +158,26 @@ require_once 'config.php';
         </div>
 
         <div id="playlistModal" class="hidden fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-75 z-50">
-            <div class="bg-gray-800 p-6 rounded-lg shadow-lg w-11/12 md:w-1/2 lg:w-1/3">
-                <h2 id="modalPlaylistTitle" class="text-xl font-bold mb-4 text-white"></h2>
-                <p id="modalPlaylistDetails" class="text-white mb-4"></p>
-                
-                <!-- Songs Container -->
-                <div id="modalSongsContainer" class="flex flex-wrap justify-center gap-4"></div>
+    <div class="bg-gray-800 p-6 rounded-lg shadow-lg w-11/12 md:w-1/2 lg:w-1/3">
+        <h2 id="modalPlaylistTitle" class="text-xl font-bold mb-4 text-white"></h2>
+        <p id="modalPlaylistDetails" class="text-white mb-4"></p>
+        
+        <div class="relative max-h-[360px] w-full overflow-hidden hide-scrollbar">
+    <!-- Scrollujący obszar -->
+    <div id="modalSongsContainer" class="flex flex-wrap justify-center w-full gap-4 max-h-[360px] overflow-y-scroll hide-scrollbar scroll-container">
+</div>
+</div>
 
-                <div class="flex justify-end mt-4">
-                    <button id="closeModalButton" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                        Zamknij
-                    </button>
-                </div>
-            </div>
+
+
+
+        <div class="flex justify-end mt-4">
+            <button id="closeModalButton" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                Zamknij
+            </button>
         </div>
+    </div>
+</div> 
 
 
 
@@ -516,7 +522,9 @@ async function openPlaylistModal(title, details, playlistId) {
     const modalPlaylistTitle = document.getElementById('modalPlaylistTitle');
     const modalPlaylistDetails = document.getElementById('modalPlaylistDetails');
     const modalSongsContainer = document.getElementById('modalSongsContainer');
+    const body = document.body; // Pobranie elementu body
 
+    // Ustawienia modala
     modalPlaylistTitle.textContent = title;
     modalPlaylistDetails.textContent = `Status: ${details}`;
     modalSongsContainer.innerHTML = '<p class="text-gray-400">Ładowanie piosenek...</p>';
@@ -534,7 +542,7 @@ async function openPlaylistModal(title, details, playlistId) {
             result.songs.forEach((song, index) => {
                 console.log('Adding song:', song);
                 const songPlayer = createSongPlayer(song, 'wide');
-                songPlayer.querySelector('.playButton').dataset.songIndex = index;  // Ustawienie indeksu piosenki
+                songPlayer.querySelector('.playButton').dataset.songIndex = index; // Ustawienie indeksu piosenki
                 modalSongsContainer.appendChild(songPlayer);
             });
         } else {
@@ -545,12 +553,16 @@ async function openPlaylistModal(title, details, playlistId) {
         modalSongsContainer.innerHTML = '<p class="text-gray-400">Wystąpił błąd podczas ładowania piosenek.</p>';
     }
 
+    // Pokaż modal i zablokuj przewijanie tła
     playlistModal.classList.remove('hidden');
+    body.classList.add('overflow-hidden'); // Dodanie klasy Tailwind
 }
+
 
 function closePlaylistModal() {
     isInPlaylistModal = false;
     const playlistModal = document.getElementById('playlistModal');
+    const body = document.body; // Pobranie elementu body
 
     // Sprawdź, czy obecnie odtwarzane audio jest związane z modalem
     if (currentAudio && currentPlayButton && playlistModal.contains(currentPlayButton)) {
@@ -572,7 +584,9 @@ function closePlaylistModal() {
 
     // Ukryj modal
     playlistModal.classList.add('hidden');
+    body.classList.remove('overflow-hidden'); // Przywrócenie przewijania strony
 }
+
 
 
 
